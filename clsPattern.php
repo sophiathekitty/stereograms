@@ -19,6 +19,21 @@ class clsPattern extends clsImage {
 		$this->load($path);
 	}
 	//
+	// make and return a complete first column of tiled pattern
+	//
+	function makeTiledColumn($w,$h){
+		// create the blank column
+		$im = imagecreatetruecolor($w,$h);
+		// scale the pattern to fit.
+		$this->scale($w,$h);
+		// now tile the pattern image ($this->im) onto the new image ($im)
+		for($y = 0; $y < $h; $y += $this->height){
+			imagecopy($im, $this->im,0,$y,0,0,$this->width,$this->height);
+		}
+		// return the column.
+		return $im;
+	}
+	//
 	// this creates the very first row and gets everything setup. it gets called automatically if it hasn't when you make your first pass.
 	//
 	function startRow(){

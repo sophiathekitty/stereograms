@@ -102,7 +102,7 @@ class clsImage {
 	}
 	function scale($maxx,$maxy){
 		if($this->loaded){
-			if($this->width > $this->height){
+			if($this->width < $this->height || $maxx < $maxy){
 				$w = $maxx;
 				$percent = ($this->width / $w);
 				$h = ($this->height / $percent);

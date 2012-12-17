@@ -11,7 +11,7 @@ include_once("clsImage.php");
 //
 class clsDepthMap extends clsImage {
 	// private vars
-	var $max_depth = 10;	// this is the max depth/offset (100% white)
+	var $max_depth = 20;	// this is the max depth/offset (100% white)
 	var $tile_width = 100;	// the width of the pattern so that it can tile over this depth map.
 	var $tile_height = 100;	// the height of the pattern so that it can tile over this depth map.
 	var $rows = 1;				// the total number of rows (tiles) 				ex:		for($depth->r = 0; $depth->r < $depth->rows; $depth->r++){
