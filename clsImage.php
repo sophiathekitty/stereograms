@@ -32,6 +32,7 @@ class clsImage {
 	function load($path){
 		if(!is_file($path)){
 			$this->error = "Can't find $path, or it's not a file!";
+			die($this->error);
 			return false;
 		}
 		list($this->width, $this->height, $this->type, $attr) = getimagesize($path);
@@ -52,16 +53,19 @@ class clsImage {
 						$this->im=imagecreatefromwbmp($path);
 					break;
 					default:
-						$this->error = "Unknown Image Type. ($this->type)";
+						$this->error = "load error: $path | Unknown Image Type. ($this->type)";
+						die($this->error);
 						return false;
 					break;
 				}
 			} else {
-				$this->error = "Unsupported Image Type. (".$this->imageTypes[$this->type]."[$this->type])";
+				$this->error = "Unsupported Image Type. ($this->type)";
+				die($this->error);
 				return false;
 			}
 		} else {
-			$this->error = "Image too large. ($this->size)";
+			$this->error = "load error: $path | Image too large. ($this->size)";
+			die($this->error);
 			return false;
 		}
 		$this->loaded = true;
@@ -83,7 +87,8 @@ class clsImage {
 					imagewbmp($this->im,$path);
 				break;
 				default:
-					$this->error = "Unknown Image Type. ($this->type)";
+					$this->error = "save error: $path | Unknown Image Type. ($this->type)";
+					die($this->error);
 					return false;
 				break;
 			}
@@ -168,7 +173,8 @@ class clsImage {
 					imagewbmp($this->im);
 				break;
 				default:
-					$this->error = "Unknown Image Type. ($this->type)";
+					$this->error = "display error: Unknown Image Type. ($this->type)";
+					die($this->error);
 					return false;
 				break;
 			}
