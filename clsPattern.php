@@ -12,13 +12,69 @@ include_once("clsImage.php");
 class clsPattern extends clsImage {
 	// private vars
 	// constructor
-	function clsPattern($path){
-		$this->load($path);
+	function clsPattern(){
+//		$this->load($path);
+	}
+	//
+	// this is the public function to make a first column thing....
+	//
+	// options[method] = string						RandomDot || TiledImage
+	// options[speckle] = array						(optional)
+	// options[speckle][colors] = array of colors  	(optional)
+	// options[speckle][color_count] = int  		(optional)
+	// options[colors] = array of colors  			(optional)
+	// options[color_count] = int			  		(optional)
+	function firstColumn($w,$h,$options){
+		// what pattern method are we using?
+		$method = "RandomDot"; // RandomDot // TiledImage // ??
+		if($this->loaded){
+			$method = "TiledImage";
+		} elseif(isset($options['method'])){
+			$method = $options['method'];
+		}
+		if(isset($options['colors'])){
+			// ok grab out the spekle colors
+			$colors = $options['colors'];
+		} elseif(isset($options['speckle']['color_count'])){
+			// ok grab out the spekle colors
+			$colors = $this->randomColors($options['color_count']);
+		} else
+			$colors = $this->randomColors(rand(3,10));
+		// add speckle effect?
+		$speckle = false;
+		if(isset($options['speckle'])){
+			$speckle = true;
+			if(isset($options['speckle']['colors'])){
+				// ok grab out the spekle colors
+				$spekle_colors = $options['speckle']['colors'];
+			} elseif(isset($options['speckle']['color_count'])){
+				// ok grab out the spekle colors
+				$spekle_colors = $this->randomColors($options['speckle']['color_count']);
+			} else{
+				//$spekle_colors = $colors;
+			}
+		}
+		// ok now which methods to use?
+		switch($method){
+			case "TiledImage":
+			case "Tiled":
+			case "Image":
+				$im = $this->makeTiledColumn($w,$h);
+				break;
+			default:
+				$im = $this->makeRandomDotColumn($w,$h,$colors);
+				$im = $this->addSpecks($im,$w,$h,$colors);
+				break;
+		}
+		if($speckle){
+			$im = $this->addSpecks($im,$w,$h,$spekle_colors);
+		}
+		return $im;
 	}
 	//
 	// make new column
 	//
-	function makeColumn($w,$h){
+	private function makeColumn($w,$h){
 		// create the blank column
 		$im = imagecreatetruecolor($w,$h);
 		// scale the pattern to fit.
@@ -29,7 +85,7 @@ class clsPattern extends clsImage {
 	//
 	// make and return a complete first column of tiled pattern
 	//
-	function makeTiledColumn($w,$h){
+	private function makeTiledColumn($w,$h){
 		// make a new column
 		$im = $this->makeColumn($w,$h);
 		// now tile the pattern image ($this->im) onto the new image ($im)
@@ -40,7 +96,7 @@ class clsPattern extends clsImage {
 		return $im;
 	}
 	// make colors
-	function randomColors($c){
+	private function randomColors($c){
 		$colors = array();
 		for($i = 0; $i < $c; $i++){
 			$color = array();
@@ -54,7 +110,7 @@ class clsPattern extends clsImage {
 	//
 	// make and return a complete first column of tiled pattern
 	//
-	function makeRandomDotColumn($w,$h,$colors){
+	private function makeRandomDotColumn($w,$h,$colors){
 		$c = count($colors);
 		// make a new column
 		$im = $this->makeColumn($w,$h);
@@ -68,6 +124,18 @@ class clsPattern extends clsImage {
 				$color = $colors[rand(0,$c-1)];
 				imageellipse($im,$x,$y,1,1,$color);
 			}
+		}
+		return $im;
+	}
+	private function addSpecks($im,$w,$h,$colors){
+		$c = count($colors);
+		// now allocate colors
+		for($i = 0; $i < $c; $i++){
+			$colors[$i] = imagecolorallocate($im,$colors[$i]['r'],$colors[$i]['g'],$colors[$i]['b']);
+		}
+		for($i = 0; $i < $c*5; $i++){
+			$color = $colors[rand(0,$c-1)];
+			imagefilledellipse($im,rand(0,$w),rand(0,$h),rand(5,10),rand(5,10),$color);
 		}
 		// return the column.
 		return $im;

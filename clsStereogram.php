@@ -25,10 +25,12 @@ class clsStereogram extends clsImage {
 	//
 	function makeStereogram($pattern_path,$depth_path){
 		// load the pattern and depth map
-		$this->pattern = new clsPattern($pattern_path);
+		$this->pattern = new clsPattern();
 		// if the pattern width is smaller than the tile width
-		if($this->tile_width > $this->pattern->width)
-			$this->tile_width = $this->pattern->width;
+		if($this->pattern->loaded){
+			if($this->tile_width > $this->pattern->width)
+				$this->tile_width = $this->pattern->width;
+		}
 		$this->depth = new clsDepthMap($depth_path);
 		// set the width and height
 		$this->width = round($this->tile_width + $this->depth->width);
@@ -36,10 +38,15 @@ class clsStereogram extends clsImage {
 		// create new image
 		$this->im = imagecreatetruecolor($this->width,$this->height);
 		// first add in the pattern column on the left
-		if(rand(0,1) > 0)
+		$options = array();
+		//$options['speckle']['color_count'] = rand(4,8);
+		imagecopy($this->im,$this->pattern->firstColumn($this->tile_width,$this->height,$options),0,0,0,0,$this->tile_width,$this->height);
+		/*
+		if(rand(0,5) < 1)
 			imagecopy($this->im,$this->pattern->makeTiledColumn($this->tile_width,$this->height),0,0,0,0,$this->tile_width,$this->height);
 		else
 			imagecopy($this->im,$this->pattern->makeRandomDotColumn($this->tile_width,$this->height,$this->pattern->randomColors(rand(3,10))),0,0,0,0,$this->tile_width,$this->height);
+			*/
 		// now go through pixels of depth map from top to bottom and left to right
 		for($x = 0; $x < $this->depth->width; $x++){
 			for($y = 0; $y < $this->height; $y++){

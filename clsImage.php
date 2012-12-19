@@ -41,15 +41,19 @@ class clsImage {
 			if(imagetypes() & $this->type){
 				switch($this->type){
 					case IMG_GIF:
+					case 1:
 						$this->im=imagecreatefromgif($path);
 					break;
 					case IMG_JPG:
+					case 2:
 						$this->im=imagecreatefromjpeg($path);
 					break;
 					case IMG_PNG:
+					case 3:
 						$this->im=imagecreatefrompng($path);
 					break;
 					case IMG_WBMP:
+					case 4:
 						$this->im=imagecreatefromwbmp($path);
 					break;
 					default:
