@@ -18,6 +18,8 @@ class clsImage {
 	var $error;
 	var $imageTypes;
 	var $loaded;
+	var $path;
+	var $saved = false;
 	// constructor
 	function clsImage(){
 		$this->loaded = false;
@@ -29,6 +31,12 @@ class clsImage {
 					IMG_WBMP=>'WBMP'
 				);
 	}
+	function create($w,$h){
+		$this->im = imagecreatetruecolor($w,$h);
+		$this->width = $w;
+		$this->height = $h;
+		$this->loaded = true;
+	}
 	function load($path){
 		if(!is_file($path)){
 			$this->error = "Can't find $path, or it's not a file!";
@@ -37,7 +45,7 @@ class clsImage {
 		}
 		list($this->width, $this->height, $this->type, $attr) = getimagesize($path);
 		@$this->size = filesize($path) or $this->size = 0;
-		if($this->size < $this->max_size || true){
+		if($this->size < $this->max_size || true){ // i broke the size check. it doesn't seem important anymore... or to work correctly....
 			if(imagetypes() & $this->type){
 				switch($this->type){
 					case IMG_GIF:
@@ -73,9 +81,15 @@ class clsImage {
 			return false;
 		}
 		$this->loaded = true;
+		$this->path = $path;
 		return true;
 	}
-	function save($path){
+	function save(){
+		if(isset($this->path) && strlen($this->path) > 5){
+			$this->saveAs($this->path);
+		}
+	}
+	function saveAs($path){
 		if($this->loaded){
 			switch($this->type){
 				case 1:
